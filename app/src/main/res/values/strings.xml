@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">ModaAp</string>
+    <string name="titulo_modaapp">ModaApp</string>
+    <string name="subtitulo">Boutique Moda Urbana</string>
+
+    <string name="usuario">Usuario</string>
+    <string name="contrasena">Contraseña</string>
+
+    <string name="ingresar">Ingresar como administrador</string>
+    <string name="ver_catalogo">Ver catálogo</string>
+
+    <string name="credenciales_prueba">Prueba: admin / 1234</string>
+
+    <string name="titulo_catalogo">Catálogo</string>
+    <string name="catalogo_vacio">No hay productos registrados todavía</string>
+    <string name="carrito">Carrito</string>
+
+    <string name="bienvenido_admin">Bienvenido, administrador</string>
+
+    <string name="ropa">Ropa</string>
+    <string name="pedidos">Pedidos</string>
+    <string name="clientes">Clientes</string>
+    <string name="reportes">Reportes</string>
+    <string name="salir">Salir</string>
+
+    <string name="gestion_ropa">Gestión de ropa</string>
+    <string name="gestion_pedidos">Gestión de pedidos</string>
+    <string name="gestion_clientes">Gestión de clientes</string>
+    <string name="gestion_reportes">Reportes</string>
+
+    <string name="proximamente">Esta funcionalidad se completará en los próximos sprints.</string>
+
+</resources>

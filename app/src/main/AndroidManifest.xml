@@ -17,10 +17,10 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MenuActivity"
             android:exported="false"
@@ -47,6 +47,10 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ClientesActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".RegistrarRopaActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
     </application>

@@ -1,28 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="30dp"
-    android:background="@color/rosa_claro">
+    android:background="@color/rosa_claro"
+    android:padding="16dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/gestion_ropa"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:textColor="@color/rosa_principal"/>
+        android:text="Gestión de ropa"
+        android:textColor="@color/negro"
+        android:textSize="26sp"
+        android:textStyle="bold"/>
 
-    <TextView
-        android:layout_width="wrap_content"
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnNuevaRopa"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:gravity="center"
-        android:text="@string/proximamente"
-        android:textColor="@color/gris"
-        android:textSize="17sp"/>
+        android:layout_marginTop="15dp"
+        android:text="+ Registrar nueva prenda"
+        android:textColor="@color/blanco"
+        app:backgroundTint="@color/rosa_principal"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvRopa"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="15dp"/>
 
 </LinearLayout>

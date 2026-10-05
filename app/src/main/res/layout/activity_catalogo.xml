@@ -5,84 +5,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:background="@color/rosa_claro">
+    android:background="@color/rosa_claro"
+    android:padding="12dp">
 
-
-    <!-- TÍTULO -->
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/titulo_catalogo"
+        android:text="Catálogo"
         android:textSize="28sp"
         android:textStyle="bold"
-        android:textColor="@color/rosa_principal"/>
+        android:textColor="@color/negro"/>
 
-
-    <!-- CATEGORÍAS -->
 
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
+        android:scrollbars="none">
 
-        <LinearLayout
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupCategorias"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Polos"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pantalones"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Vestidos"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Casacas"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Zapatillas"/>
-
-        </LinearLayout>
+            app:singleSelection="true"
+            app:selectionRequired="true"/>
 
     </HorizontalScrollView>
 
 
-    <!-- MENSAJE -->
-
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCatalogo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/catalogo_vacio"
-        android:textColor="@color/gris"
-        android:textSize="18sp"/>
+        android:layout_marginTop="10dp"/>
 
-
-    <!-- CARRITO -->
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCarrito"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:text="@string/carrito"
+        android:text="Carrito"
         android:textColor="@color/blanco"
-        app:backgroundTint="@color/rosa_principal"
-        app:cornerRadius="25dp"/>
+        app:backgroundTint="@color/rosa_principal"/>
 
 </LinearLayout>

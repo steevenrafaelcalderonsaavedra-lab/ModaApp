@@ -24,6 +24,7 @@
             android:textColor="@color/rosa_principal"/>
 
         <TextView
+            android:id="@+id/tvBienvenida"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"

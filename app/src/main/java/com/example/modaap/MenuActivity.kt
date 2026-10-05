@@ -16,6 +16,17 @@ class MenuActivity : AppCompatActivity() {
         binding = ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val usuario =
+            intent.getStringExtra("usuario")
+                ?: "Administrador"
+
+        val rol =
+            intent.getStringExtra("rol")
+                ?: "ADMIN"
+
+
+        binding.tvBienvenida.text =
+            "Hola, $usuario - $rol"
 
         // ROPA
         binding.cardRopa.setOnClickListener {

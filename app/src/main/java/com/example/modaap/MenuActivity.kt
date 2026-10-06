@@ -1,34 +1,29 @@
 package com.example.modaap
 
-import android.os.Bundle
 import android.content.Intent
-import androidx.activity.enableEdgeToEdge
+import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.modaap.databinding.ActivityMenuBinding
+
 class MenuActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMenuBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMenuBinding.inflate(layoutInflater)
+        binding =
+            ActivityMenuBinding.inflate(
+                layoutInflater
+            )
+
         setContentView(binding.root)
 
-        val usuario =
-            intent.getStringExtra("usuario")
-                ?: "Administrador"
-
-        val rol =
-            intent.getStringExtra("rol")
-                ?: "ADMIN"
-
-
-        binding.tvBienvenida.text =
-            "Hola, $usuario - $rol"
-
+        // ==========================================
         // ROPA
+        // ==========================================
+
         binding.cardRopa.setOnClickListener {
 
             val intent = Intent(
@@ -39,8 +34,10 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
+        // ==========================================
         // PEDIDOS
+        // ==========================================
+
         binding.cardPedidos.setOnClickListener {
 
             val intent = Intent(
@@ -51,8 +48,10 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
+        // ==========================================
         // CLIENTES
+        // ==========================================
+
         binding.cardClientes.setOnClickListener {
 
             val intent = Intent(
@@ -63,8 +62,10 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
+        // ==========================================
         // REPORTES
+        // ==========================================
+
         binding.cardReportes.setOnClickListener {
 
             val intent = Intent(
@@ -75,18 +76,78 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
+        // ==========================================
         // SALIR
+        // ==========================================
+
         binding.btnSalir.setOnClickListener {
 
-            val intent = Intent(
-                this,
-                LoginActivity::class.java
+            confirmarCerrarSesion()
+        }
+    }
+
+    // ==========================================
+    // CONFIRMAR CIERRE DE SESIÓN
+    // ==========================================
+
+    private fun confirmarCerrarSesion() {
+
+        AlertDialog.Builder(this)
+            .setTitle("Cerrar sesión")
+
+            .setMessage(
+                "¿Desea cerrar la sesión del administrador?"
             )
 
-            startActivity(intent)
+            .setPositiveButton(
+                "Sí"
+            ) { _, _ ->
 
-            finish()
-        }
+                cerrarSesion()
+            }
+
+            .setNegativeButton(
+                "Cancelar",
+                null
+            )
+
+            .show()
+    }
+
+    // ==========================================
+    // HU-13: CERRAR SESIÓN
+    // ==========================================
+
+    private fun cerrarSesion() {
+
+        val preferencias =
+            getSharedPreferences(
+                "ModaAppPrefs",
+                MODE_PRIVATE
+            )
+
+        // Desactivar sesión
+        preferencias
+            .edit()
+            .putBoolean(
+                "sesion_admin",
+                false
+            )
+            .apply()
+
+        // Volver al Login
+        val intent = Intent(
+            this,
+            LoginActivity::class.java
+        )
+
+        // Borrar las pantallas anteriores
+        intent.flags =
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+        startActivity(intent)
+
+        finish()
     }
 }

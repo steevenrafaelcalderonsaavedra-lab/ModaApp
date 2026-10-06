@@ -4,25 +4,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="30dp"
-    android:background="@color/rosa_claro">
+    android:padding="16dp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/gestion_pedidos"
-        android:textSize="30sp"
+        android:text="Pedidos pendientes"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:textColor="@color/rosa_principal"/>
+        android:gravity="center"
+        android:layout_marginBottom="15dp"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/tvSinPedidos"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:text="No hay pedidos pendientes"
+        android:textSize="18sp"
         android:gravity="center"
-        android:text="@string/proximamente"
-        android:textSize="17sp"
-        android:textColor="@color/gris"/>
+        android:padding="30dp"
+        android:visibility="gone"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPedidos"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

@@ -9,7 +9,9 @@ import com.example.modaap.data.PedidoDao
 import com.example.modaap.databinding.ActivityPedidoBinding
 import com.example.modaap.model.Cliente
 import com.example.modaap.util.Carrito
-
+import android.content.Intent
+import android.net.Uri
+import androidx.appcompat.app.AlertDialog
 class PedidoActivity : AppCompatActivity() {
     private lateinit var binding:
             ActivityPedidoBinding
@@ -27,6 +29,8 @@ class PedidoActivity : AppCompatActivity() {
     private var esClienteNuevo =
         false
 
+    private val telefonoAdmin =
+        "999999999"
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -158,7 +162,42 @@ class PedidoActivity : AppCompatActivity() {
             ).show()
         }
     }
+    private fun generarMensajePedido(
+        idPedido: Long
+    ): String {
 
+        val mensaje = StringBuilder()
+
+        mensaje.append("🛍️ MODAAPP\n\n")
+        mensaje.append("Pedido #$idPedido\n\n")
+
+        for (item in Carrito.items) {
+
+            mensaje.append(
+                "${item.ropa.modelo}\n"
+            )
+
+            mensaje.append(
+                "Talla: ${item.ropa.talla}\n"
+            )
+
+            mensaje.append(
+                "Cantidad: ${item.cantidad}\n"
+            )
+
+            mensaje.append(
+                "Subtotal: S/ %.2f\n\n"
+                    .format(item.subtotal())
+            )
+        }
+
+        mensaje.append(
+            "TOTAL: S/ %.2f"
+                .format(Carrito.total())
+        )
+
+        return mensaje.toString()
+    }
 
     private fun confirmarPedido() {
 
@@ -271,21 +310,28 @@ class PedidoActivity : AppCompatActivity() {
                 idCliente,
                 Carrito.items
             )
-
-
         if (idPedido != -1L) {
+
+            val mensaje =
+                generarMensajePedido(
+                    idPedido
+                )
+
+            val telefonoCliente =
+                binding.etTelefono
+                    .text
+                    .toString()
+                    .trim()
+
 
             Carrito.vaciar()
 
 
-            Toast.makeText(
-                this,
-                "Pedido #$idPedido registrado",
-                Toast.LENGTH_LONG
-            ).show()
-
-
-            finish()
+            mostrarOpcionesWhatsApp(
+                idPedido,
+                telefonoCliente,
+                mensaje
+            )
 
         } else {
 
@@ -295,5 +341,81 @@ class PedidoActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+    private fun abrirWhatsApp(
+        telefono: String,
+        mensaje: String
+    ) {
+
+        try {
+
+            val numero =
+                "51$telefono"
+
+            val url =
+                "https://wa.me/$numero?text=" +
+                        Uri.encode(mensaje)
+
+            val intent =
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(url)
+                )
+
+            startActivity(intent)
+
+        } catch (e: Exception) {
+
+            Toast.makeText(
+                this,
+                "No se pudo abrir WhatsApp",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+    private fun mostrarOpcionesWhatsApp(
+        idPedido: Long,
+        telefonoCliente: String,
+        mensaje: String
+    ) {
+
+        AlertDialog.Builder(this)
+
+            .setTitle(
+                "Pedido #$idPedido registrado"
+            )
+
+            .setMessage(
+                "El pedido se registró correctamente. ¿A quién desea enviar el mensaje?"
+            )
+
+            .setPositiveButton(
+                "Cliente"
+            ) { _, _ ->
+
+                abrirWhatsApp(
+                    telefonoCliente,
+                    mensaje
+                )
+            }
+
+            .setNegativeButton(
+                "Administrador"
+            ) { _, _ ->
+
+                abrirWhatsApp(
+                    telefonoAdmin,
+                    mensaje
+                )
+            }
+
+            .setNeutralButton(
+                "Cerrar"
+            ) { _, _ ->
+
+                finish()
+            }
+
+            .show()
     }
 }

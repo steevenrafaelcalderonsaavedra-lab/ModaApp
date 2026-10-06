@@ -5,11 +5,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.modaap.databinding.ActivityLoginBinding
-import com.example.modaap.data.DBHelper
-class LoginActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityLoginBinding
 
-    private lateinit var dbHelper: DBHelper
+class LoginActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,114 +16,153 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inicializar base de datos
-        dbHelper = DBHelper(this)
+        // HU-13: comprobar si ya existe una sesión
+        verificarSesion()
 
-
+        // INGRESAR COMO ADMINISTRADOR
         binding.btnIngresar.setOnClickListener {
-
-            val usuario =
-                binding.etUsuario.text.toString().trim()
-
-            val password =
-                binding.etPassword.text.toString().trim()
-
-
-            binding.tilUsuario.error = null
-            binding.tilPassword.error = null
-
-            var hayError = false
-
-
-            if (usuario.isEmpty()) {
-
-                binding.tilUsuario.error =
-                    "Ingrese el usuario"
-
-                hayError = true
-            }
-
-
-            if (password.isEmpty()) {
-
-                binding.tilPassword.error =
-                    "Ingrese la contraseña"
-
-                hayError = true
-            }
-
-
-            if (hayError) {
-                return@setOnClickListener
-            }
-
-
-            // VALIDAR DESDE SQLITE
-
-            val valido =
-                dbHelper.validarUsuario(
-                    usuario,
-                    password
-                )
-
-
-            if (valido) {
-
-                val rol =
-                    dbHelper.obtenerRol(usuario)
-
-
-                Toast.makeText(
-                    this,
-                    "Bienvenido $usuario",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-
-                val intent =
-                    Intent(
-                        this,
-                        MenuActivity::class.java
-                    )
-
-
-                intent.putExtra(
-                    "usuario",
-                    usuario
-                )
-
-                intent.putExtra(
-                    "rol",
-                    rol
-                )
-
-
-                startActivity(intent)
-
-                finish()
-
-            } else {
-
-                Toast.makeText(
-                    this,
-                    "Credenciales incorrectas",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            iniciarSesion()
         }
 
-
-        // CLIENTE SIN LOGIN
-
+        // VER CATÁLOGO COMO CLIENTE
+        // En tu XML se llama btnCatalogo
         binding.btnCatalogo.setOnClickListener {
 
-            val intent =
-                Intent(
-                    this,
-                    CatalogoActivity::class.java
-                )
+            val intent = Intent(
+                this,
+                CatalogoActivity::class.java
+            )
 
             startActivity(intent)
+        }
+    }
+
+    // ==========================================
+    // INICIAR SESIÓN
+    // ==========================================
+
+    private fun iniciarSesion() {
+
+        val usuario = binding.etUsuario
+            .text
+            .toString()
+            .trim()
+
+        val password = binding.etPassword
+            .text
+            .toString()
+            .trim()
+
+        // Limpiar errores
+        binding.etUsuario.error = null
+        binding.etPassword.error = null
+
+        // Validar usuario
+        if (usuario.isEmpty()) {
+
+            binding.etUsuario.error =
+                "Ingrese el usuario"
+
+            binding.etUsuario.requestFocus()
+            return
+        }
+
+        // Validar contraseña
+        if (password.isEmpty()) {
+
+            binding.etPassword.error =
+                "Ingrese la contraseña"
+
+            binding.etPassword.requestFocus()
+            return
+        }
+
+        // Credenciales del administrador
+        if (
+            usuario == "admin" &&
+            password == "1234"
+        ) {
+
+            // Guardar sesión
+            guardarSesion()
+
+            val intent = Intent(
+                this,
+                MenuActivity::class.java
+            )
+
+            // Limpiar historial
+            intent.flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            startActivity(intent)
+
+            finish()
+
+        } else {
+
+            Toast.makeText(
+                this,
+                "Credenciales incorrectas",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    // ==========================================
+    // GUARDAR SESIÓN
+    // ==========================================
+
+    private fun guardarSesion() {
+
+        val preferencias =
+            getSharedPreferences(
+                "ModaAppPrefs",
+                MODE_PRIVATE
+            )
+
+        preferencias
+            .edit()
+            .putBoolean(
+                "sesion_admin",
+                true
+            )
+            .apply()
+    }
+
+    // ==========================================
+    // VERIFICAR SESIÓN
+    // ==========================================
+
+    private fun verificarSesion() {
+
+        val preferencias =
+            getSharedPreferences(
+                "ModaAppPrefs",
+                MODE_PRIVATE
+            )
+
+        val sesionActiva =
+            preferencias.getBoolean(
+                "sesion_admin",
+                false
+            )
+
+        if (sesionActiva) {
+
+            val intent = Intent(
+                this,
+                MenuActivity::class.java
+            )
+
+            intent.flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            startActivity(intent)
+
+            finish()
         }
     }
 }

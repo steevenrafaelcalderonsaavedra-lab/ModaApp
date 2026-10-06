@@ -6,7 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.modaap.databinding.ItemRopaBinding
 import com.example.modaap.model.Ropa
 class RopaAdapter(
-    private var lista: List<Ropa>
+    private var lista: List<Ropa>,
+    private val onClick: (Ropa) -> Unit
 ) :
     RecyclerView.Adapter<RopaAdapter.RopaViewHolder>() {
 
@@ -72,6 +73,10 @@ class RopaAdapter(
 
             holder.binding.imgRopa
                 .setImageBitmap(bitmap)
+        }
+        holder.binding.root.setOnClickListener {
+
+            onClick(ropa)
         }
     }
 

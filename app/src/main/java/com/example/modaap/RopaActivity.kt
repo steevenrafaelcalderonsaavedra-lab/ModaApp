@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.modaap.adapter.RopaAdapter
 import com.example.modaap.data.RopaDao
 import com.example.modaap.databinding.ActivityRopaBinding
-
+import androidx.core.widget.doAfterTextChanged
 class RopaActivity : AppCompatActivity() {
     private lateinit var binding:
             ActivityRopaBinding
@@ -22,7 +22,6 @@ class RopaActivity : AppCompatActivity() {
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
-
         super.onCreate(savedInstanceState)
 
         binding =
@@ -40,8 +39,21 @@ class RopaActivity : AppCompatActivity() {
         adapter =
             RopaAdapter(
                 emptyList()
-            )
+            ) { ropa ->
 
+                val intent =
+                    Intent(
+                        this,
+                        RegistrarRopaActivity::class.java
+                    )
+
+                intent.putExtra(
+                    "id",
+                    ropa.id
+                )
+
+                startActivity(intent)
+            }
 
         binding.rvRopa.layoutManager =
             LinearLayoutManager(this)
@@ -62,6 +74,13 @@ class RopaActivity : AppCompatActivity() {
 
                 startActivity(intent)
             }
+        binding.etBuscar.doAfterTextChanged {
+
+            val texto =
+                it.toString().trim()
+
+            buscarRopa(texto)
+        }
     }
 
 
@@ -71,7 +90,15 @@ class RopaActivity : AppCompatActivity() {
 
         cargarRopa()
     }
+    private fun buscarRopa(
+        texto: String
+    ) {
 
+        val lista =
+            ropaDao.listar(texto)
+
+        adapter.actualizar(lista)
+    }
 
     private fun cargarRopa() {
 

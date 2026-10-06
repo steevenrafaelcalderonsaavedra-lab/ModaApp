@@ -302,4 +302,239 @@ class RopaDao (context: Context) {
 
         return lista
     }
+    fun listar(filtro: String): ArrayList<Ropa> {
+
+        val lista = ArrayList<Ropa>()
+
+        val db = dbHelper.readableDatabase
+
+        val cursor = db.rawQuery(
+            """
+        SELECT
+            r.id,
+            r.modelo,
+            r.id_categoria,
+            c.nombre AS categoria,
+            r.talla,
+            r.marca,
+            r.color,
+            r.precio,
+            r.cantidad,
+            r.foto
+        FROM ropa r
+
+        INNER JOIN categoria c
+        ON r.id_categoria = c.id
+
+        WHERE r.modelo LIKE ?
+        OR r.marca LIKE ?
+        OR r.color LIKE ?
+
+        ORDER BY r.id DESC
+        """.trimIndent(),
+
+            arrayOf(
+                "%$filtro%",
+                "%$filtro%",
+                "%$filtro%"
+            )
+        )
+
+
+        while (cursor.moveToNext()) {
+
+            lista.add(
+                Ropa(
+                    id = cursor.getInt(
+                        cursor.getColumnIndexOrThrow("id")
+                    ),
+
+                    modelo = cursor.getString(
+                        cursor.getColumnIndexOrThrow("modelo")
+                    ),
+
+                    idCategoria = cursor.getInt(
+                        cursor.getColumnIndexOrThrow("id_categoria")
+                    ),
+
+                    categoria = cursor.getString(
+                        cursor.getColumnIndexOrThrow("categoria")
+                    ),
+
+                    talla = cursor.getString(
+                        cursor.getColumnIndexOrThrow("talla")
+                    ),
+
+                    marca = cursor.getString(
+                        cursor.getColumnIndexOrThrow("marca")
+                    ),
+
+                    color = cursor.getString(
+                        cursor.getColumnIndexOrThrow("color")
+                    ),
+
+                    precio = cursor.getDouble(
+                        cursor.getColumnIndexOrThrow("precio")
+                    ),
+
+                    cantidad = cursor.getInt(
+                        cursor.getColumnIndexOrThrow("cantidad")
+                    ),
+
+                    foto = cursor.getString(
+                        cursor.getColumnIndexOrThrow("foto")
+                    )
+                )
+            )
+        }
+
+        cursor.close()
+
+        return lista
+    }
+    fun obtener(id: Int): Ropa? {
+
+        val db =
+            dbHelper.readableDatabase
+
+        val cursor =
+            db.rawQuery(
+                """
+            SELECT
+                r.id,
+                r.modelo,
+                r.id_categoria,
+                c.nombre AS categoria,
+                r.talla,
+                r.marca,
+                r.color,
+                r.precio,
+                r.cantidad,
+                r.foto
+
+            FROM ropa r
+
+            INNER JOIN categoria c
+            ON r.id_categoria = c.id
+
+            WHERE r.id = ?
+            """.trimIndent(),
+
+                arrayOf(id.toString())
+            )
+
+
+        var ropa: Ropa? = null
+
+
+        if (cursor.moveToFirst()) {
+
+            ropa =
+                Ropa(
+
+                    id =
+                        cursor.getInt(
+                            cursor.getColumnIndexOrThrow("id")
+                        ),
+
+                    modelo =
+                        cursor.getString(
+                            cursor.getColumnIndexOrThrow("modelo")
+                        ),
+
+                    idCategoria =
+                        cursor.getInt(
+                            cursor.getColumnIndexOrThrow("id_categoria")
+                        ),
+
+                    categoria =
+                        cursor.getString(
+                            cursor.getColumnIndexOrThrow("categoria")
+                        ),
+
+                    talla =
+                        cursor.getString(
+                            cursor.getColumnIndexOrThrow("talla")
+                        ),
+
+                    marca =
+                        cursor.getString(
+                            cursor.getColumnIndexOrThrow("marca")
+                        ),
+
+                    color =
+                        cursor.getString(
+                            cursor.getColumnIndexOrThrow("color")
+                        ),
+
+                    precio =
+                        cursor.getDouble(
+                            cursor.getColumnIndexOrThrow("precio")
+                        ),
+
+                    cantidad =
+                        cursor.getInt(
+                            cursor.getColumnIndexOrThrow("cantidad")
+                        ),
+
+                    foto =
+                        cursor.getString(
+                            cursor.getColumnIndexOrThrow("foto")
+                        )
+                )
+        }
+
+
+        cursor.close()
+
+        return ropa
+    }
+    fun actualizar(
+        id: Int,
+        modelo: String,
+        idCategoria: Int,
+        talla: String,
+        marca: String,
+        color: String,
+        precio: Double,
+        cantidad: Int,
+        foto: String
+    ): Int {
+
+        val db =
+            dbHelper.writableDatabase
+
+
+        val valores =
+            ContentValues().apply {
+
+                put("modelo", modelo)
+                put("id_categoria", idCategoria)
+                put("talla", talla)
+                put("marca", marca)
+                put("color", color)
+                put("precio", precio)
+                put("cantidad", cantidad)
+                put("foto", foto)
+            }
+
+
+        return db.update(
+            "ropa",
+            valores,
+            "id = ?",
+            arrayOf(id.toString())
+        )
+    }
+    fun eliminar(id: Int): Int {
+
+        val db =
+            dbHelper.writableDatabase
+
+        return db.delete(
+            "ropa",
+            "id = ?",
+            arrayOf(id.toString())
+        )
+    }
 }

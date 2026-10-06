@@ -6,7 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.modaap.databinding.ItemCatalogoBinding
 import com.example.modaap.model.Ropa
 class CatalogoAdapter (
-    private var lista: List<Ropa>
+    private var lista: List<Ropa>,
+    private val onAgregar: (Ropa) -> Unit
 ) :
     RecyclerView.Adapter<
             CatalogoAdapter.CatalogoViewHolder
@@ -74,6 +75,10 @@ class CatalogoAdapter (
 
             holder.binding.imgProducto
                 .setImageBitmap(bitmap)
+        }
+        holder.binding.btnAgregar.setOnClickListener {
+
+            onAgregar(ropa)
         }
     }
 

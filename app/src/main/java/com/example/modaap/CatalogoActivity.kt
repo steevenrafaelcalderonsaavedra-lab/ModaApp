@@ -1,5 +1,5 @@
 package com.example.modaap
-
+import android.widget.Toast
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -10,7 +10,8 @@ import com.example.modaap.data.DBHelper
 import com.example.modaap.data.RopaDao
 import com.example.modaap.databinding.ActivityCatalogoBinding
 import com.google.android.material.chip.Chip
-
+import com.example.modaap.model.Ropa
+import com.example.modaap.util.Carrito
 class CatalogoActivity : AppCompatActivity() {
     private lateinit var binding:
             ActivityCatalogoBinding
@@ -49,8 +50,10 @@ class CatalogoActivity : AppCompatActivity() {
         adapter =
             CatalogoAdapter(
                 emptyList()
-            )
+            ) { ropa ->
 
+                mostrarCantidad(ropa)
+            }
 
         // GRILLA DE DOS COLUMNAS
 
@@ -183,5 +186,97 @@ class CatalogoActivity : AppCompatActivity() {
         adapter.actualizar(
             lista
         )
+    }
+    private fun mostrarCantidad(
+        ropa: Ropa
+    ) {
+
+        val opciones =
+            (1..ropa.cantidad)
+                .map {
+                    it.toString()
+                }
+                .toTypedArray()
+
+
+        androidx.appcompat.app.AlertDialog
+            .Builder(this)
+            .setTitle(
+                "Agregar ${ropa.modelo}"
+            )
+
+            .setSingleChoiceItems(
+                opciones,
+                0,
+                null
+            )
+
+            .setMessage(
+                "Disponible: ${ropa.cantidad}"
+            )
+
+            .setPositiveButton(
+                "Agregar"
+            ) { dialog, _ ->
+
+                val alert =
+                    dialog as androidx.appcompat.app.AlertDialog
+
+                val posicion =
+                    alert.listView.checkedItemPosition
+
+                val cantidad =
+                    if (posicion >= 0)
+                        posicion + 1
+                    else
+                        1
+
+
+                val agregado =
+                    Carrito.agregar(
+                        ropa,
+                        cantidad
+                    )
+
+
+                if (agregado) {
+
+                    Toast.makeText(
+                        this,
+                        "Agregado al carrito",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    actualizarContador()
+
+                } else {
+
+                    Toast.makeText(
+                        this,
+                        "No puede superar el stock disponible",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            .setNegativeButton(
+                "Cancelar",
+                null
+            )
+
+            .show()
+    }
+    private fun actualizarContador() {
+
+        val cantidad =
+            Carrito.cantidadProductos()
+
+        binding.btnCarrito.text =
+            "Carrito ($cantidad)"
+    }
+    override fun onResume() {
+        super.onResume()
+
+        actualizarContador()
     }
 }

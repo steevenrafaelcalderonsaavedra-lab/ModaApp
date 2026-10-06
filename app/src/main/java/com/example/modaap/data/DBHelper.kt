@@ -12,7 +12,7 @@ DATABASE_VERSION
 
     companion object {
         const val DATABASE_NAME = "modaapp.db"
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
     }
 
     override fun onConfigure(db: SQLiteDatabase) {
@@ -46,7 +46,7 @@ DATABASE_VERSION
             )
             """.trimIndent()
         )
-
+        crearTablasPedidos(db)
 
         // TABLA ROPA
         db.execSQL(
@@ -94,10 +94,66 @@ DATABASE_VERSION
         oldVersion: Int,
         newVersion: Int
     ) {
-        // En Sprint 3 realizaremos la actualización
-        // a DB_VERSION = 2 sin perder los datos.
-    }
 
+        if (oldVersion < 2) {
+
+            crearTablasPedidos(db)
+        }
+    }
+    private fun crearTablasPedidos(
+        db: SQLiteDatabase
+    ) {
+
+        db.execSQL(
+            """
+        CREATE TABLE IF NOT EXISTS cliente (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telefono TEXT UNIQUE NOT NULL,
+            nombres TEXT NOT NULL,
+            apellidos TEXT NOT NULL,
+            fecha_registro TEXT NOT NULL
+        )
+        """.trimIndent()
+        )
+
+
+        db.execSQL(
+            """
+        CREATE TABLE IF NOT EXISTS pedido (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_cliente INTEGER NOT NULL,
+            fecha TEXT NOT NULL,
+            total REAL NOT NULL,
+            estado TEXT NOT NULL DEFAULT 'PENDIENTE',
+            fecha_atencion TEXT,
+
+            FOREIGN KEY(id_cliente)
+            REFERENCES cliente(id)
+        )
+        """.trimIndent()
+        )
+
+
+        db.execSQL(
+            """
+        CREATE TABLE IF NOT EXISTS detalle_pedido (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_pedido INTEGER NOT NULL,
+            id_ropa INTEGER NOT NULL,
+            cantidad INTEGER NOT NULL CHECK(cantidad > 0),
+            precio_unit REAL NOT NULL,
+            subtotal REAL NOT NULL,
+
+            FOREIGN KEY(id_pedido)
+            REFERENCES pedido(id)
+            ON DELETE CASCADE,
+
+            FOREIGN KEY(id_ropa)
+            REFERENCES ropa(id)
+        )
+        """.trimIndent()
+        )
+    }
 
     fun validarUsuario(
         usuario: String,

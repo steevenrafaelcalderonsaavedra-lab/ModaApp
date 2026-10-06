@@ -112,7 +112,15 @@
             android:text="Guardar prenda"
             android:textColor="@color/blanco"
             app:backgroundTint="@color/rosa_principal"/>
-
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEliminar"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="10dp"
+            android:text="Eliminar"
+            android:textColor="@color/blanco"
+            android:visibility="gone"
+            app:backgroundTint="@color/negro"/>
     </LinearLayout>
 
 </ScrollView>

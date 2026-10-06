@@ -24,10 +24,11 @@ class RegistrarRopaActivity : AppCompatActivity() {
     private var fotoSeleccionada: Uri? = null
 
     private var rutaFoto: String = ""
-
+    private var idRopa: Int = -1
 
     private var categorias =
         ArrayList<Pair<Int, String>>()
+
 
 
     private val seleccionarFoto =
@@ -65,10 +66,14 @@ class RegistrarRopaActivity : AppCompatActivity() {
 
         ropaDao = RopaDao(this)
 
-
         cargarCategorias()
-
         cargarTallas()
+
+        idRopa = intent.getIntExtra("id", -1)
+
+        if (idRopa != -1) {
+            cargarDatosRopa()
+        }
 
 
         binding.btnElegirFoto.setOnClickListener {
@@ -87,6 +92,9 @@ class RegistrarRopaActivity : AppCompatActivity() {
         binding.btnGuardar.setOnClickListener {
 
             guardarRopa()
+        }
+        binding.btnEliminar.setOnClickListener {
+            confirmarEliminar()
         }
     }
 
@@ -120,7 +128,103 @@ class RegistrarRopaActivity : AppCompatActivity() {
         binding.spCategoria.adapter =
             adapter
     }
+    private fun cargarDatosRopa() {
 
+        val ropa =
+            ropaDao.obtener(idRopa)
+                ?: return
+
+
+        binding.etModelo.setText(
+            ropa.modelo
+        )
+
+        binding.etMarca.setText(
+            ropa.marca
+        )
+
+        binding.etColor.setText(
+            ropa.color
+        )
+
+        binding.etPrecio.setText(
+            ropa.precio.toString()
+        )
+
+        binding.etCantidad.setText(
+            ropa.cantidad.toString()
+        )
+
+
+        rutaFoto =
+            ropa.foto
+
+
+        if (rutaFoto.isNotEmpty()) {
+
+            val bitmap =
+                android.graphics.BitmapFactory
+                    .decodeFile(rutaFoto)
+
+            binding.imgFoto
+                .setImageBitmap(bitmap)
+        }
+
+
+        // CATEGORÍA
+
+        val posicionCategoria =
+            categorias.indexOfFirst {
+
+                it.first ==
+                        ropa.idCategoria
+            }
+
+
+        if (posicionCategoria >= 0) {
+
+            binding.spCategoria
+                .setSelection(
+                    posicionCategoria
+                )
+        }
+
+
+        // TALLA
+
+        val tallas =
+            arrayOf(
+                "XS",
+                "S",
+                "M",
+                "L",
+                "XL"
+            )
+
+
+        val posicionTalla =
+            tallas.indexOf(
+                ropa.talla
+            )
+
+
+        if (posicionTalla >= 0) {
+
+            binding.spTalla
+                .setSelection(
+                    posicionTalla
+                )
+        }
+
+
+        // CAMBIAR MODO
+
+        binding.btnGuardar.text =
+            "Actualizar"
+
+        binding.btnEliminar.visibility =
+            android.view.View.VISIBLE
+    }
 
     private fun cargarTallas() {
 
@@ -205,41 +309,34 @@ class RegistrarRopaActivity : AppCompatActivity() {
     private fun guardarRopa() {
 
         val modelo =
-            binding.etModelo
-                .text
+            binding.etModelo.text
                 .toString()
                 .trim()
-
 
         val marca =
-            binding.etMarca
-                .text
+            binding.etMarca.text
                 .toString()
                 .trim()
-
 
         val color =
-            binding.etColor
-                .text
+            binding.etColor.text
                 .toString()
                 .trim()
-
 
         val precioTexto =
-            binding.etPrecio
-                .text
+            binding.etPrecio.text
                 .toString()
                 .trim()
-
 
         val cantidadTexto =
-            binding.etCantidad
-                .text
+            binding.etCantidad.text
                 .toString()
                 .trim()
 
 
+        // ==========================
         // VALIDACIONES
+        // ==========================
 
         if (modelo.isEmpty()) {
 
@@ -284,10 +381,7 @@ class RegistrarRopaActivity : AppCompatActivity() {
             precioTexto.toDoubleOrNull()
 
 
-        if (
-            precio == null ||
-            precio <= 0
-        ) {
+        if (precio == null || precio <= 0) {
 
             binding.etPrecio.error =
                 "El precio debe ser mayor a 0"
@@ -300,10 +394,7 @@ class RegistrarRopaActivity : AppCompatActivity() {
             cantidadTexto.toIntOrNull()
 
 
-        if (
-            cantidad == null ||
-            cantidad < 0
-        ) {
+        if (cantidad == null || cantidad < 0) {
 
             binding.etCantidad.error =
                 "Cantidad inválida"
@@ -339,35 +430,134 @@ class RegistrarRopaActivity : AppCompatActivity() {
                 .toString()
 
 
-        val resultado =
-            ropaDao.insertar(
-                modelo,
-                idCategoria,
-                talla,
-                marca,
-                color,
-                precio,
-                cantidad,
-                rutaFoto
-            )
+        // ==========================
+        // INSERTAR
+        // ==========================
+
+        if (idRopa == -1) {
+
+            val resultado =
+                ropaDao.insertar(
+                    modelo,
+                    idCategoria,
+                    talla,
+                    marca,
+                    color,
+                    precio,
+                    cantidad,
+                    rutaFoto
+                )
 
 
-        if (resultado != -1L) {
+            if (resultado != -1L) {
 
-            Toast.makeText(
-                this,
-                "Prenda registrada correctamente",
-                Toast.LENGTH_SHORT
-            ).show()
+                Toast.makeText(
+                    this,
+                    "Prenda registrada correctamente",
+                    Toast.LENGTH_SHORT
+                ).show()
 
-            finish()
+                finish()
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "Error al registrar prenda",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
 
         } else {
 
+            // ==========================
+            // ACTUALIZAR
+            // ==========================
+
+            val resultado =
+                ropaDao.actualizar(
+                    idRopa,
+                    modelo,
+                    idCategoria,
+                    talla,
+                    marca,
+                    color,
+                    precio,
+                    cantidad,
+                    rutaFoto
+                )
+
+
+            if (resultado > 0) {
+
+                Toast.makeText(
+                    this,
+                    "Prenda actualizada correctamente",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                finish()
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "No se pudo actualizar la prenda",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+    private fun confirmarEliminar() {
+
+        androidx.appcompat.app.AlertDialog
+            .Builder(this)
+            .setTitle("Eliminar prenda")
+            .setMessage(
+                "¿Está seguro de eliminar esta prenda?"
+            )
+            .setPositiveButton("Sí") { _, _ ->
+
+                eliminarRopa()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+    private fun eliminarRopa() {
+
+        try {
+
+            val resultado =
+                ropaDao.eliminar(idRopa)
+
+            if (resultado > 0) {
+
+                Toast.makeText(
+                    this,
+                    "Prenda eliminada correctamente",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                finish()
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "No se pudo eliminar la prenda",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        } catch (
+            e: android.database.sqlite.SQLiteConstraintException
+        ) {
+
             Toast.makeText(
                 this,
-                "Error al registrar prenda",
-                Toast.LENGTH_SHORT
+                "No se puede eliminar: tiene pedidos",
+                Toast.LENGTH_LONG
             ).show()
         }
     }
